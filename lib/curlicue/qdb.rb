@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'thread'
 require 'amalgalite'
 
 module Curlicue
@@ -114,6 +115,7 @@ CREATE TABLE messages (
     def initialize( db, name = nil )
       @db = db
       @name=name
+      @write_lock = Mutex.new
     end
 
 
@@ -132,8 +134,10 @@ CREATE TABLE messages (
     # 
     # Returns the row id of the message.
     def push( contents )
-      query( "INSERT INTO messages (content) VALUES (?)", contents )
-      db.last_insert_rowid
+      @write_lock.synchronize do
+        query( "INSERT INTO messages (content) VALUES (?)", contents )
+        db.last_insert_rowid
+      end
     end
 
 
