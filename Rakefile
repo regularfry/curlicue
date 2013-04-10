@@ -8,3 +8,8 @@ Rake::TestTask.new do |t|
   t.verbose = true
   t.test_files = FileList["test/**/test_*.rb"]
 end
+
+desc "build the gem"
+task :gem do
+  sh "gem build curlicue.gemspec"
+end
